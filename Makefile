@@ -10,29 +10,33 @@
 #                                                                              #
 # **************************************************************************** #
 
-SRC =	main.c
-		
-OBG = $(SRC:.c=.o)
+NAME =		fractol
+
+OBJ_DIR =	./bin/
+SRC_DIR =	./src/
+INC_DIR =	./inc/
+
+SRC =		main.c img_funk.c event_hooks.c
+
+OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 
 FLAG = -Wextra -Werror -Wall
-
-HED = ./
-
-NAME = fractol
 
 .PHONY : all clean fclean re
 
 all: $(NAME)
 
-$(NAME): $(OBG)
-	@gcc -lmlx -framework OpenGL -framework AppKit $(FLAG) -I$(HED) $(OBG) -o $(NAME)
+$(NAME): $(OBJ)
+	gcc -lmlx -framework OpenGL -framework AppKit $(FLAG) -I$(INC_DIR) $(OBJ) -o $(NAME)
 
-%.o: %.c
-	@gcc $(FLAG) -I$(HED) -o $@ -c $<
+$(OBJ_DIR)%.o: %.c
+	gcc -c $< -o $@ -I $(INC_DIR)
 
 clean:
-	@rm -f $(OBG)
+	rm -f $(OBJ)
 fclean: clean
-	@rm -f $(NAME)
+	rm -f $(NAME)
 
 re: fclean all
+
+vpath %.c $(SRC_DIR)

@@ -14,6 +14,7 @@
 # define FRACTOL_H
 # include "stdio.h"
 # include <mlx.h>
+# include <pthread.h>
 # include <stdlib.h>
 
 # define ESC 53
@@ -58,12 +59,15 @@ typedef struct	s_window
 	void			*mlx;
 	void			*win;
 	t_image			*img;
-	t_rot_mat		rot;
+	t_rot_mat		*rot;
 }				t_window;
 
+
+void			*potok(void *param);
 int				expose_hook(void *param);
 int				mouse_hook(int but, int x, int y, void *param);
 void			img_pixel_put(t_image *data, int x, int y, int color);
 int				key_hook(int key, void *param);
+void			print_fractl(t_window wind, t_rot_mat rot);
 
 #endif

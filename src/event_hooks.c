@@ -12,12 +12,12 @@
 
 #include "../inc/fractol.h"
 
-static void	*f(void *param, int num)
-{
-	//if (num == 0)
-		return (((t_window *)param)->ror);
+// static void	*f(void *param, int num)
+// {
+// 	//if (num == 0)
+// 		return (((t_window *)param)->ror);
 
-}
+// }
 
 int		expose_hook(void *param)
 {
@@ -33,10 +33,14 @@ int		mouse_hook(int but, int x, int y, void *param)
 
 int		key_hook(int key, void *param)
 {
-	key == ESC ? exit(0) : 0;
-	key == A_KEY ? (*(t_rot_mat*)(f(param, 0)))[0][3] += 0.1 : 0;
+	t_window	*wind;
 
-	
+	wind = (t_window*)param;
+	key == ESC ? exit(0) : 0;
+	key == A_KEY ? (*wind->rot)[0][3] -= 0.1 : 0;
+	key == D_KEY ? (*wind->rot)[0][3] += 0.1 : 0;
+	key == PLUS ? (*wind->rot)[3][3] *= 1.2 : 0;
+	print_fractl(*wind, (*wind->rot));
 	return (0);
 }
 

@@ -37,6 +37,8 @@
 # define WIN_W 800
 # define WIN_H 800
 
+# define NUM_OF_THREADS 10
+
 typedef double	t_rot_mat[4][4]; 
 
 typedef struct	s_complex_number
@@ -47,11 +49,11 @@ typedef struct	s_complex_number
 
 typedef struct	s_image
 {
-	void			*img_ptr;
-	char			*pix_ptr;
 	int				bit_pixel;
 	int				line_size;
 	int				endian;
+	void			*img_ptr;
+	char			*pix_ptr;
 }				t_image;
 
 typedef struct	s_window
@@ -60,6 +62,8 @@ typedef struct	s_window
 	void			*win;
 	t_image			*img;
 	t_rot_mat		*rot;
+	int				line_per_thread;
+	int				y;
 }				t_window;
 
 

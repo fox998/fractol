@@ -17,53 +17,63 @@ void		init_matrix(t_rot_mat *rot)
 	(*rot)[3][3] = 1;
 	(*rot)[1][3] = 0;
 	(*rot)[0][3] = -0.5;
-
 }
 
-void	*potok(void *param);
+int			get_num(t_complex z, t_complex c, int pres)
+{
+	double		temp;
+	int			num;
+
+	// z^2 + c = (Rz + Iz * i)^2 + Rc + Ic*i = Rz^2 + 2RzIz*i - Iz^2 + Rc + Ic*i
+	// f(z) = u(Rz^2 - Iz^2 + Rc) + i * v(2RzIz + Ic);
+	num = 0;
+	while (z.i * z.i + z.r * z.r < 4.0 && num++ < pres)
+	{
+		temp = z.r * z.r - z.i * z.i + c.r;
+		z.i = 2 * z.r * z.i + c.i;
+		z.r = temp;
+	}
+	return (num);
+}
+
+void	*potok(void *param)
+{
+	static int	thread = -1;
+	t_complex	c;
+	int			x;
+	int			y;
+	t_window	wind;
+
+	wind = *(t_window*)param;
+	thread = (thread + 1) % NUM_OF_THREADS;
+	y = thread * wind.line_per_thread + wind.y;
+	while (++x < WIN_W)
+	{
+		c.r = 1.5 * (x + x - WIN_W) / (WIN_W * (*wind.rot)[3][3]) + (*wind.rot)[0][3];
+		c.i = (y + y - WIN_H) / (WIN_H * (*wind.rot)[3][3]) + (*wind.rot)[1][3];
+		img_pixel_put(wind.img, x, y, get_num(c, c, 100) * 0x01000F);
+	}
+	return (0);
+}
 
 void print_fractl(t_window wind, t_rot_mat rot)
 {
-	t_complex	c;
-	t_complex	z;
-	double		temp;
-	int			color;
-	int y;
-	int x;
-	int num;
+	int			num;
+	pthread_t 	tid[NUM_OF_THREADS];
 
-
-
-	int count_of_thread = 4;
-	pthread_t 	tid[count_of_thread];
-	y = 0;
-	while (y < count_of_thread)
+	wind.y = -1;
+	while (++wind.y < wind.line_per_thread)
 	{
-		pthread_create(tid + y, NULL, potok, &wind);
-		y++;
-	}
-
-	y = -1;
-	while (++y < WIN_H)
-	{
-		x = -1;
-		while (++x < WIN_W)
+		num = 0;
+		while (num < NUM_OF_THREADS)
 		{
-			z.r = z.i = 0;
-			c.r = 1.5 * (x + x - WIN_W) / (WIN_W * rot[3][3]) + rot[0][3];
-			c.i = (y + y - WIN_H) / (WIN_H * rot[3][3]) + rot[1][3];
-			num = 0;
-			// z^2 + c = (Rz + Iz * i)^2 + Rc + Ic*i = Rz^2 + 2RzIz*i - Iz^2 + Rc + Ic*i
-			// f(z) = u(Rz^2 - Iz^2 + Rc) + i * v(2RzIz + Ic);
-			while (z.i * z.i + z.r * z.r < 4.0 && num < 500)
-			{
-				temp = z.r * z.r - z.i * z.i + c.r;
-				z.i = 2 * z.r * z.i + c.i;
-				z.r = temp;
-				num++;
-			}
-			color = num * 0x01000F;
-			img_pixel_put(wind.img, x, y, color);
+			pthread_create(tid + num, NULL, potok, &wind);
+			num++;
+		}
+		while (num > 0)
+		{
+			num--;
+			pthread_join(tid[num], NULL);
 		}
 	}
 	mlx_put_image_to_window(wind.mlx, wind.win, wind.img->img_ptr, 0, 0);
@@ -78,6 +88,7 @@ int main(void)
 	wind.mlx = mlx_init();
 	wind.win = mlx_new_window(wind.mlx, WIN_H, WIN_W, "fractol");
 	wind.img = &img;
+	wind.line_per_thread = WIN_H / NUM_OF_THREADS;
 	img.img_ptr = mlx_new_image(wind.mlx, WIN_H, WIN_W);
 	img.pix_ptr = mlx_get_data_addr(img.img_ptr, &img.bit_pixel,
 		&img.line_size, &img.endian);

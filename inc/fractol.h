@@ -16,6 +16,8 @@
 # include <mlx.h>
 # include <pthread.h>
 # include <stdlib.h>
+# include <unistd.h>
+# include <sys/types.h>
 
 # define ESC 53
 # define RIGHT_ERROW 123
@@ -34,10 +36,10 @@
 # define D_KEY 2
 # define SPASE 49
 
-# define WIN_W 800
+# define WIN_W 1000
 # define WIN_H 800
 
-# define NUM_OF_THREADS 10
+# define NUM_OF_THREADS 20
 
 typedef double	t_rot_mat[4][4]; 
 
@@ -63,8 +65,16 @@ typedef struct	s_window
 	t_image			*img;
 	t_rot_mat		*rot;
 	int				line_per_thread;
-	int				y;
 }				t_window;
+
+typedef struct	s_thread
+{
+	
+	int		y;
+	t_window		*wind;
+	int				num;
+	pthread_t		des;
+}				t_thread;
 
 
 void			*potok(void *param);
@@ -73,5 +83,6 @@ int				mouse_hook(int but, int x, int y, void *param);
 void			img_pixel_put(t_image *data, int x, int y, int color);
 int				key_hook(int key, void *param);
 void			print_fractl(t_window wind, t_rot_mat rot);
+int				check_input(int argc, char **argv);
 
 #endif

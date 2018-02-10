@@ -18,6 +18,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/types.h>
+# include <unistd.h>
+# include <errno.h>
 
 # define ESC 53
 # define RIGHT_ERROW 123
@@ -41,7 +43,9 @@
 
 # define NUM_OF_THREADS 20
 
-typedef double	t_rot_mat[4][4]; 
+# define MAX_WIND_NUM 2
+
+typedef double	t_rot_mat[4][4];
 
 typedef struct	s_complex_number
 {
@@ -69,12 +73,18 @@ typedef struct	s_window
 
 typedef struct	s_thread
 {
-	
-	int		y;
+	int				*y;
 	t_window		*wind;
 	int				num;
 	pthread_t		des;
 }				t_thread;
+
+typedef struct	s_mlx
+{
+	void			*mlx;
+	t_window		*wind[MAX_WIND_NUM];
+	t_thread		thread[NUM_OF_THREADS];
+}				t_mlx;
 
 
 void			*potok(void *param);

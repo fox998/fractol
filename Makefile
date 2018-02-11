@@ -16,7 +16,7 @@ OBJ_DIR =	./bin/
 SRC_DIR =	./src/
 INC_DIR =	./inc/
 
-SRC =		main.c img_funk.c event_hooks.c check_input.c
+SRC =		main.c img_funk.c event_hooks.c check_input.c fract_funk.c
 
 OBJ = $(addprefix $(OBJ_DIR), $(SRC:.c=.o))
 

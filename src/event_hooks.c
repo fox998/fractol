@@ -19,9 +19,29 @@
 
 // }
 
+int leave_hook(void *param)
+{
+	t_window	*wind;
+	int			num;
+
+	wind = (t_window*)param;
+	num = --(*wind->num_of_wind);
+	mlx_destroy_window(wind->mlx, wind->win);
+	printf("leave\n");
+	if (num == 0)
+		exit(0);
+	return (0);
+}
+
 int		expose_hook(void *param)
 {
 	printf("expose_hook\n");
+	return (0);
+}
+
+int		mouse_move_hook(int x, int y, void *param)
+{
+	//printf("mouse_move_hook x : %i y : %i\n", x, y);
 	return (0);
 }
 

@@ -30,7 +30,8 @@ static int	ft_strcmp(const char *st1, const char *st2)
 
 static void	usage(void)
 {
-	write(1, "usage: ./fractol fractol_name\nnames:\n\tMandelbort\n\tJulia\n", 56);
+	write(1, "usage: ./fractol fractol_name\nnames:", 36);
+	write(1, "\n\tMandelbort\n\tJulia\n\tT\n\tF\n", 26);
 	exit(1);
 }
 
@@ -39,16 +40,15 @@ int			check_input(int argc, char **argv)
 	int		i;
 	int		res;
 
-	if (argc != 2 && argc !=3)
+	if (argc != 2 && argc != 3)
 		usage();
 	res = 0;
 	i = 0;
 	while (++i < argc)
-		if (!ft_strcmp(argv[i], "Mandelbort") || !ft_strcmp(argv[i], "Julia"))
-			res += i;
-		else
-			write(1, "wrong name\n", 11);
-	if(res == 0)
+		if (!ft_strcmp(argv[i], "Mandelbort") || !ft_strcmp(argv[i], "Julia")
+			|| !ft_strcmp(argv[i], "T") || !ft_strcmp(argv[i], "F"))
+			res += pow(2, i - 1);
+	if (res == 0)
 		usage();
-	return(res);
+	return (res);
 }
